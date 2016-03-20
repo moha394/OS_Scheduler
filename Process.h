@@ -1,8 +1,12 @@
+#include <iostream>
+using namespace std;
+
 class Process
 {
 public:
-	Process::Process(double arrivalTime, double burstTime,  int priority = 0)
+	Process(size_t pid, double arrivalTime, double burstTime,  int priority = 0)
 	{
+		_pid = pid;
 		_waitingTime = 0;
 		_stopTime = 0;
 		_working = false;
@@ -17,37 +21,37 @@ public:
 		if (_working)
 		{
 			throw("Process already running!");
-			return;
 		}
 
 		_startTime = time;
 		_waitingTime += time - _stopTime;
 		_working = true;
+
+		cout << "[" << _pid << "] Started at " << _startTime << endl;
 	}
 
 	void stop(double time) {
 		if (!_working)
 		{
 			throw("Process not running!");
-			return;
 		}
 
-		int latency = time - _startTime;
+		double latency = time - _startTime;
 		if (latency > _burstTime)
 		{
 			throw("Process finishes before stopping!!");
-			return;
 		}
 
-		_waitingTime = time;
 		_remainingTime -= latency;
-		_stopTime - time;
+		_stopTime = time;
 		_working = false;
 
 		if (_remainingTime == 0)
 		{
 			_finishTime = time;
 		}
+
+		cout << "[" << _pid << "] Stopped at " << _stopTime << endl;
 	}
 
 	double getArrivalTime() {
@@ -75,16 +79,15 @@ public:
 	}
 
 	bool finished() {
-		if (_remainingTime == 0)
-			return true;
-		return false;
+		return _remainingTime == 0;
 	}
 
 	bool working() {
-		return working;
+		return _working;
 	}
 
 private:
+	size_t _pid;
 	double _startTime, _stopTime, _finishTime;
 	double _waitingTime, _burstTime, _arrivalTime, _remainingTime;
 	int _priority;
