@@ -15,6 +15,9 @@ public:
 		_queue = queue;
 	}
 
+    ~Scheduler() {
+    }
+
 	void sjf(bool prempt);
 	void fcfs();
 	void priority(bool prempt);
