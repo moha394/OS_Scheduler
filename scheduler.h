@@ -8,7 +8,9 @@ private:
 	list<Process> _queue;
 
 public:
-	Scheduler(string algorithm, list<Process> queue);
+	Scheduler(list<Process> queue) {
+		_queue = queue;
+	}
 
 	void sjf(bool prempt);
 	void fcfs();
