@@ -1,16 +1,16 @@
-#include "Scheduler.h"
+#include "scheduler.h"
 
 void Scheduler::sjf(bool prempt) {
 	int time = 0;
 	struct CompareArrivalBurst {
-	    bool operator()(Process lhs, Process rhs) {
-	    	if (lhs.getArrivalTime() < rhs.getArrivalTime())
-	    		return true;
-	    	else if (lhs.getArrivalTime() == rhs.getArrivalTime())
-	    		return lhs.getBurstTime() <= rhs.getBurstTime();
-	    	else
-	    		return false;
-	    };
+		bool operator()(Process lhs, Process rhs) {
+			if (lhs.getArrivalTime() < rhs.getArrivalTime())
+				return true;
+			else if (lhs.getArrivalTime() == rhs.getArrivalTime())
+				return lhs.getBurstTime() <= rhs.getBurstTime();
+			else
+				return false;
+		};
 	};
 
 	_queue.sort(CompareArrivalBurst());
