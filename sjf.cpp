@@ -24,6 +24,7 @@ void Scheduler::sjf(bool prempt) {
 	while (true) {
 		Process* item = _queue.front();
 		if (item->finished()) {
+            delete item;
 			_queue.pop_front();
 			if (_queue.size() == 0) break;
 		}
