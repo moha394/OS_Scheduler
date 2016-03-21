@@ -6,11 +6,11 @@ struct CompareArrivalBurst {
 		double t1 = lhs->getArrivalTime();
 		double t2 = rhs->getArrivalTime();
 		if (current_time >= t1 && current_time >= t2)
-			return lhs->getRemainingTime() <= rhs->getRemainingTime();
+			return lhs->getRemainingTime(current_time) <= rhs->getRemainingTime(current_time);
 		if (t1 < t2)
 			return true;
 		else if (t1 == t2)
-			return lhs->getRemainingTime() <= rhs->getRemainingTime();
+			return lhs->getRemainingTime(current_time) <= rhs->getRemainingTime(current_time);
 		else
 			return false;
 	}
@@ -20,26 +20,36 @@ void Scheduler::sjf(bool prempt) {
 	int counter = 0;
 
 	_queue.sort(CompareArrivalBurst());
+	Process* item = _queue.front();
 
 	while (true) {
-		Process* item = _queue.front();
-		if (item->finished()) {
-            delete item;
-			_queue.pop_front();
-			if (_queue.size() == 0) break;
-		}
-		else {
-			 _queue.sort(CompareArrivalBurst());
-			item = _queue.front();
-			item->start(current_time);
+			if (item->getRemainingTime(current_time) == 0) {
+				item->stop(current_time);
+				delete item;
+				_queue.pop_front();
+				item = _queue.front();
+				if (_queue.size() == 0) break;
+			}
+
+			_queue.sort(CompareArrivalBurst());
+			if (_queue.front() != item)
+			{
+				item->stop(current_time);
+				item = _queue.front();
+			}
+
+			if (!item->isWorking())
+			{
+				item->start(current_time);
+			}
+			 
 
 			if (!prempt || _queue.size() == 1)
-				current_time += item->getRemainingTime();
+				current_time += item->getRemainingTime(current_time);
 			else
 				current_time += 1;
 
-			item->stop(current_time);
-		}
+		
 		counter++;
 		if (counter > 100)  {
 			cout << "Infinite Loop Ya 7mar";
