@@ -12,8 +12,8 @@ public:
 		_queue = queue;
 	}
 
-	void sjf(bool prempt);
+	void sjf(bool prempt=false);
 	void fcfs();
-	void priority(bool prempt);
+	void priority(bool prempt=false);
 	void roundRobin();
 };
