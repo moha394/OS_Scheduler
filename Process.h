@@ -78,11 +78,11 @@ public:
 		return _priority;
 	}
 
-	bool finished() {
+	bool isFinished() {
 		return _remainingTime == 0;
 	}
 
-	bool working() {
+	bool isWorking() {
 		return _working;
 	}
 
