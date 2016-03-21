@@ -38,7 +38,7 @@ void Scheduler::sjf(bool prempt) {
 				item = _queue.front();
 			}
 
-			if (!item->isWorking())
+			if (!item->isWorking() && top->getArrivalTime() <= time)
 			{
 				item->start(current_time);
 			}
