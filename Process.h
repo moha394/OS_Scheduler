@@ -62,8 +62,8 @@ public:
 		return _burstTime;
 	}
 
-	double getRemainingTime() {
-		return _remainingTime;
+	double getRemainingTime(size_t time) {
+		return isWorking() ? _remainingTime - (time - _startTime) : _remainingTime;
 	}
 
 	double getWaitingTime() {
