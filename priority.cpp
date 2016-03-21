@@ -15,11 +15,13 @@
 // 	}
 // };
 
-struct compareArrivalPriority {
+size_t time = 0;
+
+struct CompareArrivalPriority {
 	bool operator()(Process* lhs, Process* rhs) {
 		double t1 = lhs->getArrivalTime();
 		double t2 = rhs->getArrivalTime();
-		if (_time >= t1 && _time >= t2)
+		if (time >= t1 && time >= t2)
 			return lhs->getPriority() <= rhs->getPriority();
 		if (t1 < t2)
 			return true;
@@ -30,52 +32,57 @@ struct compareArrivalPriority {
 	}
 };
 
-void Scheduler::priority(bool prempt=false) {
-	int totalWaiting = 0;
+void Scheduler::priority(bool prempt) {
+	double totalWaiting = 0;
 
-	_queue.sort(compareArrivalPriority);
+	_queue.sort(CompareArrivalPriority());
 	Process* top = _queue.front();
 	if (prempt)
 	{
 
 		while(_queue.size() != 0) {
-			_queue.sort(compareArrivalPriority);
-			if (_queue.front != top)
+			if (top->getRemainingTime(time) == 0)
 			{
-				top->stop();
+				top->stop(time);
+				totalWaiting += top->getWaitingTime();
+				delete top;
+				_queue.pop_front();
+				top = _queue.front();
+				if (_queue.size() == 0) break;
+			}
+
+			_queue.sort(CompareArrivalPriority());
+			if (_queue.front() != top)
+			{
+				top->stop(time);
 				top = _queue.front();
 			}
 
-			if (!top->isWorking()) {
-				top->start();
+			if (!top->isWorking() && top->getArrivalTime() <= time) {
+				top->start(time);
 			}
-			else {
-				if (top->isFinished())
-				{
-					top->stop();
-					totalWaiting += top->getWaitingTime();
-					delete top;
-					_queue.pop();
-				}
-
-			}
-			_time++;
+			
+			time++;
 		}
 	}
 	else {
-		while(_queue.size > 0) {
-			int latency = top->getBurstTime();
-			top->start(_time);
-			_time += latency;
-			top->stop(_time);
-			totalWaiting += top->getWaitingTime();
-			delete top;
-			_queue.sort(compareArrivalPriority);
-			top = _queue.pop();
+		while(_queue.size() > 0) {
+			if(top->getArrivalTime() <= time) {
+				double latency = top->getBurstTime();
+				top->start(time);
+				time += latency;
+				top->stop(time);
+				totalWaiting += top->getWaitingTime();
+				delete top;
+				_queue.sort(CompareArrivalPriority());
+				top = _queue.front();
+				_queue.pop_front();
+			}
+			else time++;
 		}
 	}
 
-	cout << "Total time: " << _time;
+	cout << "Total time: " << time;
 	cout << "Average waiting time: " << totalWaiting/_queue.size();
 }
 
