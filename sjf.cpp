@@ -1,4 +1,5 @@
 #include "Scheduler.h"
+using namespace std ;
 size_t current_time = 0;
 
 struct CompareArrivalBurst {
